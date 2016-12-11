@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>FF6 ZST editor</title>
+  <meta name="description" content="FF6 ZST Editor">
+</head>
+<body>
+  <form action='#' onsubmit="return false;">
+    <input type='file' id='fileinput' onchange="loadFile();" >
+  </form>
+  <button onclick="download();">Download</button>
+  <script>
+    var data = null;
+    function loadFile() {
+      var input = document.getElementById('fileinput');
+      var file = input.files[0];
+      var fr = new FileReader();
+      fr.onload = fileLoaded;
+      fr.readAsArrayBuffer(file);
+
+      function fileLoaded() {
+        var tmp = fr.result;
+        console.log(typeof(tmp));
+        console.log(tmp);
+        data = new Uint8Array(tmp);
+        showResult(fr, "Binary");
+      }
+    }
+
+    function showResult(fr, label) {
+      var markup = [];
+      for (var n = 0; n < data.length; ++n) {
+        markup.push(data[n].toString(16));
+      }
+      bodyAppend("p", label + " (" + data.length + "):");
+      bodyAppend("pre", markup.join(" "));
+    }
+
+    function bodyAppend(tagName, innerHTML) {
+      var elm = document.createElement(tagName);
+      elm.innerHTML = innerHTML;
+      document.body.appendChild(elm);
+    }
+    
+    function download(){
+      var a = document.createElement("a");
+      document.body.appendChild(a);
+      a.style = "display: none";
+      var blob = new Blob([data], {type: "application/octet-stream"}),
+            url = window.URL.createObjectURL(blob);
+      a.href = url;
+      a.download = "copyIHope.txt";
+      a.click();
+      window.URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
