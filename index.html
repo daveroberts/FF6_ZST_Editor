@@ -10,8 +10,27 @@
     <input type='file' id='fileinput' onchange="loadFile();" >
   </form>
   <button onclick="download();">Download</button>
+  <h2>Cyan</h2>
+  <div>Level: <input type="text" id="cyan_level" /></div>
+  <div>Current HP: <input type="text" id="cyan_curhp" /></div>
+  <div>Current HP2: <input type="text" id="cyan_curhp2" /></div>
+  <div>Max HP: <input type="text" id="cyan_maxhp" /></div>
   <script>
     var data = null;
+    const mappings = [
+      {name: "cyan_level", offset: "2265", type: "number"},
+      {name: "cyan_curhp", offset: "2266", type: "number"},
+      {name: "cyan_curhp2", offset: "2267", type: "number"},
+      {name: "cyan_maxhp", offset: "2268", type: "number"},
+    ];
+    mappings.forEach(function(mapping){
+      var el = document.getElementById(mapping.name);
+      el.addEventListener("change", function(){
+        data[parseInt(mapping.offset, 16)] = el.value.toString(16);
+        showResult("Debug");
+      });
+    });
+    
     function loadFile() {
       var input = document.getElementById('fileinput');
       var file = input.files[0];
@@ -24,14 +43,18 @@
         console.log(typeof(tmp));
         console.log(tmp);
         data = new Uint8Array(tmp);
-        showResult(fr, "Binary");
+        mappings.forEach(function(mapping){
+          var el = document.getElementById(mapping.name);
+          el.value=data[parseInt(mapping.offset, 16)];
+        });
+        showResult("Binary");
       }
     }
 
-    function showResult(fr, label) {
+    function showResult(label) {
       var markup = [];
       for (var n = 0; n < data.length; ++n) {
-        markup.push(data[n].toString(16));
+        markup.push(("00"+data[n].toString(16)).substr(-2));
       }
       bodyAppend("p", label + " (" + data.length + "):");
       bodyAppend("pre", markup.join(" "));
