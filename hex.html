@@ -1,0 +1,13 @@
+<pre id="output"></pre>
+<script type="text/javascript">
+  function dec_to_hex(dec, padding){
+    if (padding == undefined){ padding = 2; }
+    return (("0".repeat(padding))+parseInt(dec).toString(16)).substr(-1*padding)
+  }
+  var data = [];
+  for(var i=0; i< 256; i++){
+    data[i] = dec_to_hex(i);
+  }
+  
+  document.getElementById("output").innerText = data.join("\n");
+</script>

@@ -7,27 +7,630 @@
 </head>
 <body>
   <form action='#' onsubmit="return false;">
-    <input type='file' id='fileinput' onchange="loadFile();" >
+    <input type='file' id='fileinput' onchange="loadFile();" style="width: 100%;" />
   </form>
-  <button onclick="download();">Download</button>
-  <h2>Cyan</h2>
-  <div>Level: <input type="text" id="cyan_level" /></div>
-  <div>Current HP: <input type="text" id="cyan_curhp" /></div>
-  <div>Current HP2: <input type="text" id="cyan_curhp2" /></div>
-  <div>Max HP: <input type="text" id="cyan_maxhp" /></div>
+  <button onclick="download();">Download Changed File</button>
+  <table id="table-mappings" style="display: none;">
+    <thead>
+      <tr><th>Mapping</th><th>Value</th></tr>
+    </thead>
+    <tbody id="mappings">
+    </tbody>
+  </table>
+  <div id="data-stats"></div>
+  <pre id="data"></pre>
   <script>
+    var items = [
+      {hex: "00", name: "Dirk", type: "weapon" },
+      {hex: "01", name: "MitrilKnife", type: "weapon" },
+      {hex: "02", name: "Guardian", type: "weapon" },
+      {hex: "03", name: "Air Lancet", type: "weapon" },
+      {hex: "04", name: "ThiefKnife", type: "weapon" },
+      {hex: "05", name: "Assassin", type: "weapon" },
+      {hex: "06", name: "Man Eater", type: "weapon" },
+      {hex: "07", name: "SwordBreaker", type: "weapon" },
+      {hex: "08", name: "Graedus", type: "weapon" },
+      {hex: "09", name: "ValiantKnife", type: "weapon" },
+      {hex: "0a", name: "MithrilBlade", type: "weapon" },
+      {hex: "0b", name: "RegalCutlass", type: "weapon" },
+      {hex: "0c", name: "Rune Edge", type: "weapon" },
+      {hex: "0d", name: "Flame Sabre", type: "weapon" },
+      {hex: "0e", name: "Blizzard", type: "weapon" },
+      {hex: "0f", name: "ThunderBlade", type: "weapon" },
+      {hex: "10", name: "Epee", type: "weapon" },
+      {hex: "11", name: "Break Blade", type: "weapon" },
+      {hex: "12", name: "Drainer", type: "weapon" },
+      {hex: "13", name: "Enhancer", type: "weapon" },
+      {hex: "14", name: "Crystal", type: "weapon" },
+      {hex: "15", name: "Falchion", type: "weapon" },
+      {hex: "16", name: "Soul Sabre", type: "weapon" },
+      {hex: "17", name: "Ogre Nix", type: "weapon" },
+      {hex: "18", name: "Excalibur", type: "weapon" },
+      {hex: "19", name: "Scimiter", type: "weapon" },
+      {hex: "1a", name: "Illumina", type: "weapon" },
+      {hex: "1b", name: "Ragnarok", type: "weapon" },
+      {hex: "1c", name: "Atma Weapon", type: "weapon" },
+      {hex: "1d", name: "Mithril Pike", type: "weapon" },
+      {hex: "1e", name: "Trident", type: "weapon" },
+      {hex: "1f", name: "Stout Spear", type: "weapon" },
+      {hex: "20", name: "Partisan", type: "weapon" },
+      {hex: "21", name: "Pearl Lance", type: "weapon" },
+      {hex: "22", name: "Gold Lance", type: "weapon" },
+      {hex: "23", name: "Aura Lance", type: "weapon" },
+      {hex: "24", name: "Imp Halberd", type: "weapon" },
+      {hex: "25", name: "Imperial", type: "weapon" },
+      {hex: "26", name: "Kodachi", type: "weapon" },
+      {hex: "27", name: "Blossom", type: "weapon" },
+      {hex: "28", name: "Hardened", type: "weapon" },
+      {hex: "29", name: "Striker", type: "weapon" },
+      {hex: "2a", name: "Stunner", type: "weapon" },
+      {hex: "2b", name: "Ashura", type: "weapon" },
+      {hex: "2c", name: "Kotetsu", type: "weapon" },
+      {hex: "2d", name: "Forged", type: "weapon" },
+      {hex: "2e", name: "Tempest", type: "weapon" },
+      {hex: "2f", name: "Murasame", type: "weapon" },
+      {hex: "30", name: "Aura", type: "weapon" },
+      {hex: "31", name: "Strato", type: "weapon" },
+      {hex: "32", name: "Sky Render", type: "weapon" },
+      {hex: "33", name: "Heal Rod", type: "weapon" },
+      {hex: "34", name: "Mithril Rod", type: "weapon" },
+      {hex: "35", name: "Fire Rod", type: "weapon" },
+      {hex: "36", name: "Ice Rod", type: "weapon" },
+      {hex: "37", name: "Thunder Rod", type: "weapon" },
+      {hex: "38", name: "Poison Rod", type: "weapon" },
+      {hex: "39", name: "Pearl Rod", type: "weapon" },
+      {hex: "3a", name: "Gravity Rod", type: "weapon" },
+      {hex: "3b", name: "Punisher", type: "weapon" },
+      {hex: "3c", name: "Magus Rod", type: "weapon" },
+      {hex: "3d", name: "Chocobo Brsh", type: "weapon" },
+      {hex: "3e", name: "DaVinci Brsh", type: "weapon" },
+      {hex: "3f", name: "Magical Brsh", type: "weapon" },
+      {hex: "40", name: "Rainbow Brsh", type: "weapon" },
+      {hex: "41", name: "Shuriken" },
+      {hex: "42", name: "Ninja Star" },
+      {hex: "43", name: "Tack Star" },
+      {hex: "44", name: "Flail", type: "weapon" },
+      {hex: "45", name: "Full Moon", type: "weapon" },
+      {hex: "46", name: "Morning Star", type: "weapon" },
+      {hex: "47", name: "Boomerang", type: "weapon" },
+      {hex: "48", name: "Rising Sun", type: "weapon" },
+      {hex: "49", name: "Hawk Eye", type: "weapon" },
+      {hex: "4a", name: "Bone Club", type: "weapon" },
+      {hex: "4b", name: "Sniper", type: "weapon" },
+      {hex: "4c", name: "Wing Edge", type: "weapon" },
+      {hex: "4d", name: "Cards", type: "weapon" },
+      {hex: "4e", name: "Darts", type: "weapon" },
+      {hex: "4f", name: "Doom Darts", type: "weapon" },
+      {hex: "50", name: "Trump", type: "weapon" },
+      {hex: "51", name: "Dice", type: "weapon" },
+      {hex: "52", name: "Fixed Dice", type: "weapon" },
+      {hex: "53", name: "MetalKnuckle", type: "weapon" },
+      {hex: "54", name: "Mithril Claw", type: "weapon" },
+      {hex: "55", name: "Kaiser", type: "weapon" },
+      {hex: "56", name: "Poison Claw", type: "weapon" },
+      {hex: "57", name: "Fire Knuckle", type: "weapon" },
+      {hex: "58", name: "Dragon Claw", type: "weapon" },
+      {hex: "59", name: "Tiger Fangs", type: "weapon" },
+      {hex: "5a", name: "Buckler", type: "shield" },
+      {hex: "5b", name: "Heavy Shld", type: "shield" },
+      {hex: "5c", name: "Mithril Shld", type: "shield" },
+      {hex: "5d", name: "Gold Shld", type: "shield" },
+      {hex: "5e", name: "Aegis Shld", type: "shield" },
+      {hex: "5f", name: "Diamond Shld", type: "shield" },
+      {hex: "60", name: "Flame Shld", type: "shield" },
+      {hex: "61", name: "Ice Shld", type: "shield" },
+      {hex: "62", name: "Thunder Shld", type: "shield" },
+      {hex: "63", name: "Crystal Shld", type: "shield" },
+      {hex: "64", name: "Genji Shld", type: "shield" },
+      {hex: "65", name: "TortoiseShld", type: "shield" },
+      {hex: "66", name: "Cursed Shld", type: "shield" },
+      {hex: "67", name: "Paladin Shld", type: "shield" },
+      {hex: "68", name: "Force Shld", type: "shield" },
+      {hex: "69", name: "Leather Hat", type: "helmet" },
+      {hex: "6a", name: "Hair Band", type: "helmet" },
+      {hex: "6b", name: "Plumed Hat", type: "helmet" },
+      {hex: "6c", name: "Beret", type: "helmet" },
+      {hex: "6d", name: "Magus Hat", type: "helmet" },
+      {hex: "6e", name: "Bandana", type: "helmet" },
+      {hex: "6f", name: "Iron Helmet", type: "helmet" },
+      {hex: "70", name: "Coronet", type: "helmet" },
+      {hex: "71", name: "Bard's Hat", type: "helmet" },
+      {hex: "72", name: "Green Beret", type: "helmet" },
+      {hex: "73", name: "Head Band", type: "helmet" },
+      {hex: "74", name: "Mithril Helm", type: "helmet" },
+      {hex: "75", name: "Tiara", type: "helmet" },
+      {hex: "76", name: "Gold Helmet", type: "helmet" },
+      {hex: "77", name: "Tiger Mask", type: "helmet" },
+      {hex: "78", name: "Red Hat", type: "helmet" },
+      {hex: "79", name: "Mystery Veil", type: "helmet" },
+      {hex: "7a", name: "Circlet", type: "helmet" },
+      {hex: "7b", name: "Regal Crown", type: "helmet" },
+      {hex: "7c", name: "Diamond Helm", type: "helmet" },
+      {hex: "7d", name: "Dark Hood", type: "helmet" },
+      {hex: "7e", name: "Crystal Helm", type: "helmet" },
+      {hex: "7f", name: "Oath Veil", type: "helmet" },
+      {hex: "80", name: "Cat Hood", type: "helmet" },
+      {hex: "81", name: "Genji Helmet", type: "helmet" },
+      {hex: "82", name: "Thornlet", type: "helmet" },
+      {hex: "83", name: "Titanium", type: "helmet" },
+      {hex: "84", name: "LeatherArmor", type: "armor" },
+      {hex: "85", name: "Cotton Robe", type: "armor" },
+      {hex: "86", name: "Kung Fu Suit", type: "armor" },
+      {hex: "87", name: "Iron Armor", type: "armor" },
+      {hex: "88", name: "Silk Robe", type: "armor" },
+      {hex: "89", name: "Mithril Vest", type: "armor" },
+      {hex: "8a", name: "Ninja Gear", type: "armor" },
+      {hex: "8b", name: "White Dress", type: "armor" },
+      {hex: "8c", name: "Mithril Mail", type: "armor" },
+      {hex: "8d", name: "Gaia Gear", type: "armor" },
+      {hex: "8e", name: "Mirage Dress", type: "armor" },
+      {hex: "8f", name: "Gold Armor", type: "armor" },
+      {hex: "90", name: "Power Sash", type: "armor" },
+      {hex: "91", name: "Light Robe", type: "armor" },
+      {hex: "92", name: "Diamond Vest", type: "armor" },
+      {hex: "93", name: "Red Jacket", type: "armor" },
+      {hex: "94", name: "Force Armor", type: "armor" },
+      {hex: "95", name: "DiamondArmor", type: "armor" },
+      {hex: "96", name: "Dark Gear", type: "armor" },
+      {hex: "97", name: "Tao Robe", type: "armor" },
+      {hex: "98", name: "Crystal Mail", type: "armor" },
+      {hex: "99", name: "Czarina Gown", type: "armor" },
+      {hex: "9a", name: "Genji Armor", type: "armor" },
+      {hex: "9b", name: "Imp's Armor", type: "armor" },
+      {hex: "9c", name: "Minerva", type: "armor" },
+      {hex: "9d", name: "Tabby Suit", type: "armor" },
+      {hex: "9e", name: "Chocobo Suit", type: "armor" },
+      {hex: "9f", name: "Moogle Suit", type: "armor" },
+      {hex: "a0", name: "Nutkin Suit", type: "armor" },
+      {hex: "a1", name: "BehemethSuit", type: "armor" },
+      {hex: "a2", name: "Snow Muffler", type: "armor" },
+      {hex: "a3", name: "NoiseBlaster" },
+      {hex: "a4", name: "Bio Blaster" },
+      {hex: "a5", name: "Flash" },
+      {hex: "a6", name: "Chain Saw" },
+      {hex: "a7", name: "Debilitator" },
+      {hex: "a8", name: "Drill" },
+      {hex: "a9", name: "Air Anchor" },
+      {hex: "aa", name: "AutoCrossbow" },
+      {hex: "ab", name: "Fire Skean" },
+      {hex: "ac", name: "Water Edge" },
+      {hex: "ad", name: "Bolt Edge" },
+      {hex: "ae", name: "Inviz Edge" },
+      {hex: "af", name: "Shadow Edge" },
+      {hex: "b0", name: "Goggles", type: "relic" },
+      {hex: "b1", name: "Star Pendant", type: "relic" },
+      {hex: "b2", name: "Peace Ring", type: "relic" },
+      {hex: "b3", name: "Amulet", type: "relic" },
+      {hex: "b4", name: "White Cape", type: "relic" },
+      {hex: "b5", name: "Jewel Ring", type: "relic" },
+      {hex: "b6", name: "Fair Ring", type: "relic" },
+      {hex: "b7", name: "Barrier Ring", type: "relic" },
+      {hex: "b8", name: "MithrilGlove", type: "relic" },
+      {hex: "b9", name: "Guard Ring", type: "relic" },
+      {hex: "ba", name: "RunningShoes", type: "relic" },
+      {hex: "bb", name: "Wall Ring", type: "relic" },
+      {hex: "bc", name: "Cherub Down", type: "relic" },
+      {hex: "bd", name: "Cure Ring", type: "relic" },
+      {hex: "be", name: "True Knight", type: "relic" },
+      {hex: "bf", name: "DragoonBoots", type: "relic" },
+      {hex: "c0", name: "Zephyr Cape", type: "relic" },
+      {hex: "c1", name: "Czarina Ring", type: "relic" },
+      {hex: "c2", name: "Cursed Ring", type: "relic" },
+      {hex: "c3", name: "Earrings", type: "relic" },
+      {hex: "c4", name: "Atlas Armlet", type: "relic" },
+      {hex: "c5", name: "BlizzardRing", type: "relic" },
+      {hex: "c6", name: "Rage Ring", type: "relic" },
+      {hex: "c7", name: "Sneak Ring", type: "relic" },
+      {hex: "c8", name: "Pod Bracelet", type: "relic" },
+      {hex: "c9", name: "Hero Ring", type: "relic" },
+      {hex: "ca", name: "Ribbon", type: "relic" },
+      {hex: "cb", name: "Muscle Belt", type: "relic" },
+      {hex: "cc", name: "Crystal Orb", type: "relic" },
+      {hex: "cd", name: "Gold Hairpin", type: "relic" },
+      {hex: "ce", name: "Economizer", type: "relic" },
+      {hex: "cf", name: "Thief Glove", type: "relic" },
+      {hex: "d0", name: "Gauntlet", type: "relic" },
+      {hex: "d1", name: "Genji Glove", type: "relic" },
+      {hex: "d2", name: "Hyper Wrist", type: "relic" },
+      {hex: "d3", name: "Offering", type: "relic" },
+      {hex: "d4", name: "Beads", type: "relic" },
+      {hex: "d5", name: "Black Belt", type: "relic" },
+      {hex: "d6", name: "Coin Toss", type: "relic" },
+      {hex: "d7", name: "FakeMustache", type: "relic" },
+      {hex: "d8", name: "Gem Box", type: "relic" },
+      {hex: "d9", name: "Dragon Horn", type: "relic" },
+      {hex: "da", name: "Merit Award", type: "relic" },
+      {hex: "db", name: "Momento Ring", type: "relic" },
+      {hex: "dc", name: "Safety Bit", type: "relic" },
+      {hex: "dd", name: "Relic Ring", type: "relic" },
+      {hex: "de", name: "Moogle Charm", type: "relic" },
+      {hex: "df", name: "Charm Bangle", type: "relic" },
+      {hex: "e0", name: "Marvel Shoes", type: "relic" },
+      {hex: "e1", name: "Back Gaurd", type: "relic" },
+      {hex: "e2", name: "Gale Hairpin", type: "relic" },
+      {hex: "e3", name: "Sniper Sight", type: "relic" },
+      {hex: "e4", name: "Exp. Egg", type: "relic" },
+      {hex: "e5", name: "Tintinabar", type: "relic" },
+      {hex: "e6", name: "Sprint Shoes", type: "relic" },
+      {hex: "e7", name: "Rename Card" },
+      {hex: "e8", name: "Tonic" },
+      {hex: "e9", name: "Potion" },
+      {hex: "ea", name: "X-Potion" },
+      {hex: "eb", name: "Tincture" },
+      {hex: "ec", name: "Ether" },
+      {hex: "ed", name: "X-Ether" },
+      {hex: "ee", name: "Elixir" },
+      {hex: "ef", name: "Megalixir" },
+      {hex: "f0", name: "Fenix Down" },
+      {hex: "f1", name: "Revivify" },
+      {hex: "f2", name: "Antidote" },
+      {hex: "f3", name: "Eydrop" },
+      {hex: "f4", name: "Soft" },
+      {hex: "f5", name: "Remedy" },
+      {hex: "f6", name: "Sleeping Bag" },
+      {hex: "f7", name: "Tent" },
+      {hex: "f8", name: "Green Cherry" },
+      {hex: "f9", name: "Magicite" },
+      {hex: "fa", name: "Super Ball" },
+      {hex: "fb", name: "Echo Screen" },
+      {hex: "fc", name: "Smoke Bomb" },
+      {hex: "fd", name: "Warp Stone" },
+      {hex: "fe", name: "Dried Meat" },
+      {hex: "ff", name: "[Nothing]" }
+    ];
+    var glyphs = [
+      {hex: "80", char: "A" },
+      {hex: "81", char: "B" },
+      {hex: "82", char: "C" },
+      {hex: "83", char: "D" },
+      {hex: "84", char: "E" },
+      {hex: "85", char: "F" },
+      {hex: "86", char: "G" },
+      {hex: "87", char: "H" },
+      {hex: "88", char: "I" },
+      {hex: "89", char: "J" },
+      {hex: "8a", char: "K" },
+      {hex: "8b", char: "L" },
+      {hex: "8c", char: "M" },
+      {hex: "8d", char: "N" },
+      {hex: "8e", char: "O" },
+      {hex: "8f", char: "P" },
+      {hex: "90", char: "Q" },
+      {hex: "91", char: "R" },
+      {hex: "92", char: "S" },
+      {hex: "93", char: "T" },
+      {hex: "94", char: "U" },
+      {hex: "95", char: "V" },
+      {hex: "96", char: "W" },
+      {hex: "97", char: "X" },
+      {hex: "98", char: "Y" },
+      {hex: "99", char: "Z" },
+      {hex: "be", char: "!" },
+      {hex: "bf", char: "?" },
+      {hex: "c0", char: "/" },
+      {hex: "c1", char: ":" },
+      {hex: "b4", char: "0" },
+      {hex: "b5", char: "1" },
+      {hex: "b6", char: "2" },
+      {hex: "b7", char: "3" },
+      {hex: "b8", char: "4" },
+      {hex: "b9", char: "5" },
+      {hex: "ba", char: "6" },
+      {hex: "bb", char: "7" },
+      {hex: "bc", char: "8" },
+      {hex: "bd", char: "9" },
+      {hex: "c5", char: "." },
+      {hex: "9a", char: "a" },
+      {hex: "9b", char: "b" },
+      {hex: "9c", char: "c" },
+      {hex: "9d", char: "d" },
+      {hex: "9e", char: "e" },
+      {hex: "9f", char: "f" },
+      {hex: "a0", char: "g" },
+      {hex: "a1", char: "h" },
+      {hex: "a2", char: "i" },
+      {hex: "a3", char: "j" },
+      {hex: "a4", char: "k" },
+      {hex: "a5", char: "l" },
+      {hex: "a6", char: "m" },
+      {hex: "a7", char: "n" },
+      {hex: "a8", char: "o" },
+      {hex: "a9", char: "p" },
+      {hex: "aa", char: "q" },
+      {hex: "ab", char: "r" },
+      {hex: "ac", char: "s" },
+      {hex: "ad", char: "t" },
+      {hex: "ae", char: "u" },
+      {hex: "af", char: "v" },
+      {hex: "b0", char: "w" },
+      {hex: "b1", char: "x" },
+      {hex: "b2", char: "y" },
+      {hex: "b3", char: "z" },
+      {hex: "c2", char: '"' },
+      {hex: "c3", char: "'" },
+      {hex: "c3", char: "-" },
+      {hex: "ff", char: "" }
+    ];
+    var characters = [
+      {hex: "00", name: "Terra"},
+      {hex: "01", name: "Locke"},
+      {hex: "02", name: "Cyan"},
+      {hex: "03", name: "Shadow"},
+      {hex: "04", name: "Edgar"},
+      {hex: "05", name: "Sabin"},
+      {hex: "06", name: "Celes"},
+      {hex: "07", name: "Strago"},
+      {hex: "08", name: "Relm"},
+      {hex: "09", name: "Setzer"},
+      {hex: "0a", name: "Mog"},
+      {hex: "0b", name: "Gau"},
+      {hex: "0c", name: "Gogo"},
+      {hex: "0d", name: "Umaro"},
+      {hex: "0e", name: "Vicks/Wedge"},
+      {hex: "0f", name: "Imp"},
+      {hex: "10", name: "Leo"},
+      {hex: "11", name: "Banon"},
+      {hex: "12", name: "Esper Terra (Terra)"},
+      {hex: "13", name: "Merchant Locke (Soldier)"},
+      {hex: "14", name: "Ghost"},
+      {hex: "15", name: "Kefka (Terra)"},
+      {hex: "16", name: "Jump"},
+      {hex: "17", name: "Emperor Gestahl (Terra)"},
+      {hex: "18", name: "Soldier Locke [Village Elder] (Terra)"},
+      {hex: "19", name: "Empty [Young Man] (Terra) * cannot fight during battle*"},
+      {hex: "1a", name: "Empty [Interceptor] (Terra) *cannot fight during battle*"},
+      {hex: "20", name: "Empty [Opera Celes] (Celes) *cannot fight during	battle*"},
+      {hex: "21", name: "Empty [Scholar] (Glitch) *will hang the game	when fighting*"}
+    ];
+    var commands = [
+      {hex: "00", name: "Fight"},
+      {hex: "01", name: "Item"},
+      {hex: "02", name: "Magic"},
+      {hex: "03", name: "Morph"},
+      {hex: "04", name: "Revert"},
+      {hex: "05", name: "Steal"},
+      {hex: "06", name: "Capture"},
+      {hex: "07", name: "Swdtech"},
+      {hex: "08", name: "Throw"},
+      {hex: "09", name: "Tools"},
+      {hex: "0a", name: "Blitz"},
+      {hex: "0b", name: "Runic"},
+      {hex: "0c", name: "Lore"},
+      {hex: "0d", name: "Sketch"},
+      {hex: "0e", name: "Control"},
+      {hex: "0f", name: "Slot"},
+      {hex: "10", name: "Rage"},
+      {hex: "11", name: "Leap"},
+      {hex: "12", name: "Mimic"},
+      {hex: "13", name: "Dance"},
+      {hex: "14", name: "Row"},
+      {hex: "15", name: "Def."},
+      {hex: "16", name: "Jump"},
+      {hex: "17", name: "X-Magic"},
+      {hex: "18", name: "GP Rain"},
+      {hex: "19", name: "Summon"},
+      {hex: "1a", name: "Health"},
+      {hex: "1b", name: "Shock"},
+      {hex: "1c", name: "Possess"},
+      {hex: "1d", name: "MagiTek"},
+      {hex: "1e", name: "[none]"},
+      {hex: "1f", name: "[none]"},
+      {hex: "20", name: "[Glitch]"}
+    ];
+    var espers = [
+      { hex: "00", name: "Ramuh" },
+      { hex: "01", name: "Ifrit" },
+      { hex: "02", name: "Shiva" },
+      { hex: "03", name: "Siren" },
+      { hex: "04", name: "Terrato" },
+      { hex: "05", name: "Maduin" },
+      { hex: "06", name: "Shoat" },
+      { hex: "07", name: "Bismark" },
+      { hex: "08", name: "Stray" },
+      { hex: "09", name: "Palidor" },
+      { hex: "0a", name: "Tritoch" },
+      { hex: "0b", name: "Odin" },
+      { hex: "0c", name: "Raiden" },
+      { hex: "0d", name: "Bahamut" },
+      { hex: "0e", name: "Alexandr" },
+      { hex: "0f", name: "Crusader" },
+      { hex: "10", name: "Ragnarok" },
+      { hex: "11", name: "Kirin" },
+      { hex: "12", name: "Zoneseek" },
+      { hex: "13", name: "Carbunkl" },
+      { hex: "14", name: "Phantom" },
+      { hex: "15", name: "Sraphim" },
+      { hex: "16", name: "Golem" },
+      { hex: "17", name: "Unicorn" },
+      { hex: "18", name: "Fenrir" },
+      { hex: "19", name: "Startlet" },
+      { hex: "1a", name: "Phoenix" },
+      { hex: "ff", name: "[none]" }
+    ];
+    function dec_to_hex(dec, padding){
+      if (padding == undefined){ padding = 2; }
+      return (("0".repeat(padding))+parseInt(dec).toString(16)).substr(-1*padding)
+    }
+    function hex_to_dec(hex){
+      return parseInt(hex, 16)
+    }
     var data = null;
     const mappings = [
-      {name: "cyan_level", offset: "2265", type: "number"},
-      {name: "cyan_curhp", offset: "2266", type: "number"},
-      {name: "cyan_curhp2", offset: "2267", type: "number"},
-      {name: "cyan_maxhp", offset: "2268", type: "number"},
+      {name: "gold", offset: "2473", type: "triple", group: "General"},
+      {name: "steps", offset: "2479", type: "triple", group: "General"},
+      {name: "terra_character", offset: "2213", type: "character", group: "Terra"},
+      {name: "terra_name", offset: "2215", type: "name", group: "Terra"},
+      {name: "terra_cur_hp", offset: "221C", type: "double", group: "Terra"},
+      {name: "terra_max_hp", offset: "221E", type: "double", group: "Terra"},
+      {name: "terra_cur_mp", offset: "2220", type: "double", group: "Terra"},
+      {name: "terra_max_mp", offset: "2222", type: "double", group: "Terra"},
+      {name: "terra_xp", offset: "2224", type: "triple", group: "Terra"},
+      {name: "terra_level", offset: "221B", type: "number", group: "Terra"},
+      {name: "terra_command_1", offset: "2229", type: "command", group: "Terra"},
+      {name: "terra_command_2", offset: "222A", type: "command", group: "Terra"},
+      {name: "terra_command_3", offset: "222B", type: "command", group: "Terra"},
+      {name: "terra_command_4", offset: "222C", type: "command", group: "Terra"},
+      {name: "terra_vigor", offset: "222D", type: "number", group: "Terra"},
+      {name: "terra_speed", offset: "222E", type: "number", group: "Terra"},
+      {name: "terra_stamina", offset: "222F", type: "number", group: "Terra"},
+      {name: "terra_magic_power", offset: "2230", type: "number", group: "Terra"},
+      {name: "terra_esper", offset: "2231", type: "esper", group: "Terra"},
+      {name: "terra_weapon", offset: "2232", type: "weapon", group: "Terra"},
+      {name: "terra_shield", offset: "2233", type: "shield", group: "Terra"},
+      {name: "terra_helmet", offset: "2234", type: "helmet", group: "Terra"},
+      {name: "terra_armor", offset: "2235", type: "armor", group: "Terra"},
+      {name: "terra_relic_1", offset: "2236", type: "relic", group: "Terra"},
+      {name: "terra_relic_2", offset: "2237", type: "relic", group: "Terra"},
+      {name: "terra_spell_fire", offset: "2681", type: "spell", group: "Terra"},
+      {name: "terra_spell_ultima", offset: "2695", type: "spell", group: "Terra"},
+      {name: "locke_character", offset: "2238", type: "character", group: "Locke"},
+      {name: "locke_name", offset: "223a", type: "name", group: "Locke"},
+      {name: "locke_cur_hp", offset: "2241", type: "double", group: "Locke"},
+      {name: "locke_max_hp", offset: "2243", type: "double", group: "Locke"},
+      {name: "locke_cur_mp", offset: "2245", type: "double", group: "Locke"},
+      {name: "locke_max_mp", offset: "2247", type: "double", group: "Locke"},
+      {name: "locke_xp", offset: "2249", type: "triple", group: "Locke"},
+      {name: "locke_level", offset: "2240", type: "number", group: "Locke"},
+      {name: "locke_command_1", offset: "224e", type: "command", group: "Locke"},
+      {name: "locke_command_2", offset: "224f", type: "command", group: "Locke"},
+      {name: "locke_command_3", offset: "2250", type: "command", group: "Locke"},
+      {name: "locke_command_4", offset: "2251", type: "command", group: "Locke"},
+      {name: "locke_vigor", offset: "2252", type: "number", group: "Locke"},
+      {name: "locke_speed", offset: "2253", type: "number", group: "Locke"},
+      {name: "locke_stamina", offset: "2254", type: "number", group: "Locke"},
+      {name: "locke_magic_power", offset: "2255", type: "number", group: "Locke"},
+      {name: "locke_esper", offset: "2256", type: "esper", group: "Locke"},
+      {name: "locke_weapon", offset: "2257", type: "weapon", group: "Locke"},
+      {name: "locke_shield", offset: "2258", type: "shield", group: "Locke"},
+      {name: "locke_helmet", offset: "2259", type: "helmet", group: "Locke"},
+      {name: "locke_armor", offset: "225a", type: "armor", group: "Locke"},
+      {name: "locke_relic_1", offset: "225b", type: "relic", group: "Locke"},
+      {name: "locke_relic_2", offset: "225c", type: "relic", group: "Locke"},
+      {name: "locke_spell_fire", offset: "26b7", type: "spell", group: "Locke"},
+      {name: "locke_spell_ultima", offset: "26CB", type: "spell", group: "Locke"},
+      {name: "cyan_level", offset: "2265", type: "number", group: "Cyan"},
+      {name: "cyan_curhp", offset: "2266", type: "double", group: "Cyan"},
+      {name: "cyan_maxhp", offset: "2268", type: "double", group: "Cyan"},
+      {name: "debug", offset: "0000", type: "weapon", group: "Debug"},
     ];
+    for(var i = 0; i < 256; i++){
+      const item_start = '247c';
+      const quantity_start = '257c';
+      var item_offset = dec_to_hex(hex_to_dec(item_start)+i,4);
+      var qty_offset = dec_to_hex(hex_to_dec(quantity_start)+i,4);
+      mappings.push({name: "Inventory_"+i, offset: item_offset, type:"item", group: "Inventory" });
+      mappings.push({name: "Inventory_"+i+"_qty", offset: qty_offset, type:"number", group: "Inventory" });
+    }
+    var table = document.getElementById("mappings");
+    var current_group = undefined;
     mappings.forEach(function(mapping){
-      var el = document.getElementById(mapping.name);
+      if (mapping.group != current_group){
+        var row = table.insertRow(table.rows.length);
+        var c = row.insertCell(0);
+        c.colspan = 2;
+        var label = document.createElement('label');
+        var cb = document.createElement('input');
+        cb.type='checkbox';
+        
+        label.appendChild(cb);
+        label.innerHTML = label.innerHTML + mapping.group;
+        label.addEventListener("change", function(e){
+          var elements = document.querySelectorAll("[data-group='"+mapping.group+"']");
+          elements.forEach((el)=>{el.style.display = e.target.checked?'table-row':'none';});
+        });
+        c.appendChild(label);
+        current_group = mapping.group;
+      }
+      var row = table.insertRow(table.rows.length);
+      row.setAttribute('data-group', mapping.group);
+      row.style.display = "none";
+      var c1 = row.insertCell(0);
+      c1.innerHTML = mapping.name;
+      var c2 = row.insertCell(1);
+      var el = null;
+      if (mapping.type == "item" || mapping.type == "weapon" || mapping.type == "helmet" || mapping.type == "armor" || mapping.type == "shield" || mapping.type == "relic" ||
+          mapping.type == "character" ||
+          mapping.type == "command" ||
+          mapping.type == "esper") {
+        el = document.createElement('select');
+        var arr = null;
+        if (mapping.type == "character"){ arr = characters; }
+        else if (mapping.type == "command"){ arr = commands; }
+        else if (mapping.type == "esper"){ arr = espers; }
+        else if (mapping.type == "item"){ arr = items; }
+        else if (mapping.type == "weapon"){ arr = items.filter((i)=>i.type=="weapon"); }
+        else if (mapping.type == "helmet"){ arr = items.filter((i)=>i.type=="helmet"); }
+        else if (mapping.type == "armor"){ arr = items.filter((i)=>i.type=="armor"); }
+        else if (mapping.type == "shield"){ arr = items.filter((i)=>i.type=="shield"); }
+        else if (mapping.type == "relic"){ arr = items.filter((i)=>i.type=="relic"); }
+        arr.sort((a,b)=>a.name<b.name?-1:1);
+        for(var index=0; index < arr.length; index++){
+          var o = document.createElement('option');
+          o.value = arr[index].hex;
+          o.innerHTML = arr[index].name;
+          el.appendChild(o);
+        };
+      } else if (mapping.type == "spell"){
+        el = document.createElement('input');
+        el.type = "checkbox";
+      } else if (mapping.type == "name"){
+        el = document.createElement('input');
+        el.type = "text";
+        el.maxlength=6;
+      } else {
+        el = document.createElement('input');
+        el.type = "text";
+      }
+      el.id = mapping.name;
+      c2.appendChild(el);
       el.addEventListener("change", function(){
-        data[parseInt(mapping.offset, 16)] = el.value.toString(16);
-        showResult("Debug");
+        if (mapping.type == "number"){
+          data[hex_to_dec(mapping.offset)] = el.value;
+        } else if (mapping.type == "double"){
+          var hex = dec_to_hex(el.value, 4);
+          var x = hex.substring(0,2);
+          var y = hex.substring(2,4);
+          data[hex_to_dec(mapping.offset)] = hex_to_dec(y);
+          data[hex_to_dec(mapping.offset)+1] = hex_to_dec(x);
+        } else if (mapping.type == "triple"){
+          var hex = dec_to_hex(el.value, 6);
+          var x = hex.substring(0,2);
+          var y = hex.substring(2,4);
+          var z = hex.substring(4,6);
+          data[hex_to_dec(mapping.offset)] = hex_to_dec(z);
+          data[hex_to_dec(mapping.offset)+1] = hex_to_dec(y);
+          data[hex_to_dec(mapping.offset)+2] = hex_to_dec(x);
+        } else if (mapping.type == "character"){
+          var hex = el.value;
+          data[hex_to_dec(mapping.offset)] = hex_to_dec(hex);
+          data[hex_to_dec(mapping.offset)+1] = hex_to_dec(hex);
+        } else if (mapping.type == "item" || mapping.type == "weapon" || mapping.type == "helmet" || mapping.type == "armor" || mapping.type == "shield" || mapping.type == "relic" ||
+                   mapping.type == "command" ||
+                   mapping.type == "esper"){
+          var hex = el.value;
+          data[hex_to_dec(mapping.offset)] = hex_to_dec(hex);
+        } else if (mapping.type == "spell"){
+          if (el.checked){ data[hex_to_dec(mapping.offset)] = 255; }
+          else { data[hex_to_dec(mapping.offset)] = 0; }
+        } else if (mapping.type == "name"){
+          var arr = el.value.split('');
+          for(var i=0; i < 6; i++){
+            if (arr[i]){
+              var g = glyphs.find((g)=>g.char==arr[i]);
+              if (g){
+                data[hex_to_dec(mapping.offset)+i] = hex_to_dec(g.hex);
+              } else {
+                // possible validation error in the future?  Blank for now
+                data[hex_to_dec(mapping.offset)+i] = hex_to_dec("ff");
+              }
+            } else {
+              data[hex_to_dec(mapping.offset)+i] = hex_to_dec("ff");
+            }
+          }
+        } else {
+          data[hex_to_dec(mapping.offset)] = hex_to_dec(el.value);
+        }
+        updateData();
       });
     });
     
@@ -39,31 +642,61 @@
       fr.readAsArrayBuffer(file);
 
       function fileLoaded() {
+        document.getElementById('table-mappings').style.display = 'table';
         var tmp = fr.result;
-        console.log(typeof(tmp));
-        console.log(tmp);
         data = new Uint8Array(tmp);
         mappings.forEach(function(mapping){
           var el = document.getElementById(mapping.name);
-          el.value=data[parseInt(mapping.offset, 16)];
+          if (mapping.type == "number"){
+            el.value=data[parseInt(mapping.offset, 16)];
+          } else if (mapping.type == "double"){
+            var x = dec_to_hex(data[parseInt(mapping.offset, 16)]);
+            var y = dec_to_hex(data[parseInt(mapping.offset, 16)+1]);
+            var z = hex_to_dec(y+x)
+            el.value=z;
+          } else if (mapping.type == "triple"){
+            var x = dec_to_hex(data[parseInt(mapping.offset, 16)]);
+            var y = dec_to_hex(data[parseInt(mapping.offset, 16)+1]);
+            var z = dec_to_hex(data[parseInt(mapping.offset, 16)+2]);
+            var a = hex_to_dec(z+y+x)
+            el.value=a;
+          } else if (mapping.type == "name"){
+            var arr = [];
+            var name = "";
+            for(var i=0; i < 6; i++){
+              arr[i] = dec_to_hex(data[hex_to_dec(mapping.offset)+i]);
+              var g = glyphs.find((g)=>g.hex==arr[i]);
+              if (g){
+                name = name + g.char;
+              } else {
+                // possible validation error in the future?  Blank for now
+              }
+            }
+            el.value=name;
+          } else if (mapping.type == "item" || mapping.type == "weapon" || mapping.type == "helmet" || mapping.type == "armor" || mapping.type == "shield" || mapping.type == "relic" ||
+                     mapping.type == "character" ||
+                     mapping.type == "command" ||
+                     mapping.type == "esper"){
+            var val = data[hex_to_dec(mapping.offset)];
+            el.value = dec_to_hex(val);
+          } else if (mapping.type == "spell"){
+            var val = data[hex_to_dec(mapping.offset)];
+            el.checked = (val==255);
+          } else {
+            el.value = dec_to_hex(data[hex_to_dec(mapping.offset)]);
+          }
         });
-        showResult("Binary");
+        updateData();
       }
     }
 
-    function showResult(label) {
+    function updateData() {
       var markup = [];
       for (var n = 0; n < data.length; ++n) {
         markup.push(("00"+data[n].toString(16)).substr(-2));
       }
-      bodyAppend("p", label + " (" + data.length + "):");
-      bodyAppend("pre", markup.join(" "));
-    }
-
-    function bodyAppend(tagName, innerHTML) {
-      var elm = document.createElement(tagName);
-      elm.innerHTML = innerHTML;
-      document.body.appendChild(elm);
+      document.getElementById("data").innerText = markup.join(" ");
+      document.getElementById("data-stats").innerText = "Size: "+data.length;
     }
     
     function download(){
@@ -73,7 +706,7 @@
       var blob = new Blob([data], {type: "application/octet-stream"}),
             url = window.URL.createObjectURL(blob);
       a.href = url;
-      a.download = "copyIHope.txt";
+      a.download = "FF6Modified.zst";
       a.click();
       window.URL.revokeObjectURL(url);
     }
