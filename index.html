@@ -447,6 +447,62 @@
       { hex: "1a", name: "Phoenix" },
       { hex: "ff", name: "[none]" }
     ];
+    var spells = [
+      { offset: 0, name: "Fire" },
+      { offset: 1, name: "Ice" },
+      { offset: 2, name: "Bolt" },
+      { offset: 3, name: "Poison" },
+      { offset: 4, name: "Drain" },
+      { offset: 5, name: "Fire2" },
+      { offset: 6, name: "Ice2" },
+      { offset: 7, name: "Bolt2" },
+      { offset: 8, name: "Bio" },
+      { offset: 9, name: "Fire3" },
+      { offset: 10, name: "Ice3" },
+      { offset: 11, name: "Bolt3" },
+      { offset: 12, name: "Break" },
+      { offset: 13, name: "Doom" },
+      { offset: 14, name: "Pearl" },
+      { offset: 15, name: "Flare" },
+      { offset: 16, name: "Demi" },
+      { offset: 17, name: "Quartr" },
+      { offset: 18, name: "X-Zone" },
+      { offset: 19, name: "Meteor" },
+      { offset: 20, name: "Ultima" },
+      { offset: 21, name: "Quake" },
+      { offset: 22, name: "W Wind" },
+      { offset: 23, name: "Merton" },
+      { offset: 24, name: "Scan" },
+      { offset: 25, name: "Slow" },
+      { offset: 26, name: "Rasp" },
+      { offset: 27, name: "Mute" },
+      { offset: 28, name: "Safe" },
+      { offset: 29, name: "Sleep" },
+      { offset: 30, name: "Muddle" },
+      { offset: 31, name: "Haste" },
+      { offset: 32, name: "Stop" },
+      { offset: 33, name: "Bserk" },
+      { offset: 34, name: "Float" },
+      { offset: 35, name: "Imp" },
+      { offset: 36, name: "Rflect" },
+      { offset: 37, name: "Shell" },
+      { offset: 38, name: "Vanish" },
+      { offset: 39, name: "Haste2" },
+      { offset: 40, name: "Slow2" },
+      { offset: 41, name: "Osmose" },
+      { offset: 42, name: "Warp" },
+      { offset: 43, name: "Quick" },
+      { offset: 44, name: "Dispel" },
+      { offset: 45, name: "Cure" },
+      { offset: 46, name: "Cure2" },
+      { offset: 47, name: "Cure3" },
+      { offset: 48, name: "Life" },
+      { offset: 49, name: "Life2" },
+      { offset: 50, name: "Anitdot" },
+      { offset: 51, name: "Remedy" },
+      { offset: 52, name: "Regen" },
+      { offset: 53, name: "Life3" }
+    ];
     function dec_to_hex(dec, padding){
       if (padding == undefined){ padding = 2; }
       return (("0".repeat(padding))+parseInt(dec).toString(16)).substr(-1*padding)
@@ -520,6 +576,10 @@
       var qty_offset = dec_to_hex(hex_to_dec(quantity_start)+i,4);
       mappings.push({name: "Inventory_"+i, offset: item_offset, type:"item", group: "Inventory" });
       mappings.push({name: "Inventory_"+i+"_qty", offset: qty_offset, type:"number", group: "Inventory" });
+    }
+    for(var i = 0; i < spells.length; i++){
+      var offset = dec_to_hex(hex_to_dec(2681)+spells[i].offset, 4);
+      mappings.push({name: "Terra_spell_"+spells[i].name, offset: offset, type:"spell", group: "Terra" });
     }
     var table = document.getElementById("mappings");
     var current_group = undefined;
